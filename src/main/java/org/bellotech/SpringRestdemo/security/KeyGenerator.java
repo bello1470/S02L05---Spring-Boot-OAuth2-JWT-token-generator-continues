@@ -13,10 +13,10 @@ final  class KeyGeneratorUtils {
     static KeyPair generateRsaKeys(){
         KeyPair KeyPair;
         try{
-            KeyPairGenerator keyPairGenerator = keyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 
             keyPairGenerator.initialize(2048);
-            KeyPair = keyPairGenerator.generateRsaKeys();
+            KeyPair = keyPairGenerator.generateKeyPair();
             }catch (Exception ex){
                 throw new IllegalStateException(ex);
 

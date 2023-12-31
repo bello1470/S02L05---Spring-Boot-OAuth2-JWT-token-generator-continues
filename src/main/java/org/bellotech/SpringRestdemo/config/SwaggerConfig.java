@@ -1,24 +1,32 @@
 package org.bellotech.SpringRestdemo.config;
 
 import org.springframework.context.annotation.Configuration;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.*;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 
 @Configuration
+// for view in the swagger
 @OpenAPIDefinition(
-  info =@Info(
-    title = "Demo API",
-    version = "Verions 1.0",
-    contact = @Contact(
-      name = "StudyEasy", email = "admin@studyeasy.org", url = "https://studyeasy.org"
-    ),
-    license = @License(
-      name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0"
-    ),
-    termsOfService = "https://studyeasy.org/",
-    description = "Spring Boot RestFul API Demo by Chaand"
-  )
+     info =@Info(
+        title = "MyProject API",
+          version = "version 1.0",
+          contact = @Contact(
+            name = "bellotech", email = "abubakarbello264@gmail.com", url = "https://github.com/bello1470"
+          ),
+          license = @License(
+            name="Apache 2.0", url="http://www.apache.org/licenses/LICENSE-2.0"
+          ),
+          termsOfService= "https://github.com/bello1470",
+          description = "Spring Boot RestFul API by Mustapha"
+ )
 )
 public class SwaggerConfig {
+
+    
+
+    
+   
 }

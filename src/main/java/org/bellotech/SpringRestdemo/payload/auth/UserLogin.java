@@ -1,5 +1,5 @@
 package org.bellotech.SpringRestdemo.payload.auth;
 
-public record UserLogin(String username, String password) {
+public record UserLogin(String email, String password) {
     
 }
