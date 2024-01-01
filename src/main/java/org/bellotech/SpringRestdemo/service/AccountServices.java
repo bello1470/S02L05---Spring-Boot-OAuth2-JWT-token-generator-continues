@@ -27,11 +27,20 @@ public class AccountServices implements UserDetailsService{
     private PasswordEncoder passwordEncoder;
 
     public Account save(Account account){
+        if (account.getRole()==null) {
+            account.setRole("ROLE_USER");
+            
+        }
         // Encoding the user's password before saving it to the database.
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         return accountRepository.save(account);
 
        
+    }
+
+    public List<Account> findAll(){
+
+        return accountRepository.findAll();
     }
 
     @Override

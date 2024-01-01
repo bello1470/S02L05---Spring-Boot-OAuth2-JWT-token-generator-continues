@@ -81,26 +81,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http    
 
-        .csrf(csrf -> csrf.ignoringRequestMatchers("/db-console/**"))
-        .headers().frameOptions().sameOrigin()
-        .and()
-        // we are protecting /api/** endpoints with the oAuth2 resource server
-                .authorizeHttpRequests()
-                .requestMatchers("/token").permitAll()
-                .requestMatchers("/**").permitAll()
+        
+        .headers(headers -> headers.frameOptions().sameOrigin())
+        .authorizeHttpRequests(requests -> requests
+                .requestMatchers("/auth/token").permitAll()
+                .requestMatchers("/auth/users/add").permitAll()
+                .requestMatchers("/auth/users").hasAuthority("SCOPE_ROLE_USER")
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/test").authenticated()
-                .and()
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-                // TODO: remove these after upgrading the DB from H2 infile DB
-                http
-                .csrf((csrf) -> csrf
-                .disable());
-                http
-                .headers((headers) -> headers
-                .frameOptions().disable());
+                .requestMatchers("/test").authenticated())
+        .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+// TODO: remove these after upgrading the DB from H2 infile DB
+      
+http.csrf(csrf -> csrf.disable());
+http.headers(headers -> headers.frameOptions().disable());
 
 
                 /* http.csrf().disable();
