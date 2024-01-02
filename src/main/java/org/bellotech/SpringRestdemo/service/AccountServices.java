@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.bellotech.SpringRestdemo.model.Account;
 import org.bellotech.SpringRestdemo.repository.AccountRepository;
-
+import org.bellotech.SpringRestdemo.utils.constant.Authority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,8 +27,8 @@ public class AccountServices implements UserDetailsService{
     private PasswordEncoder passwordEncoder;
 
     public Account save(Account account){
-        if (account.getRole()==null) {
-            account.setRole("ROLE_USER");
+        if (account.getAuthorities() == null) {
+            account.setAuthorities(Authority.USER.toString());
             
         }
         // Encoding the user's password before saving it to the database.
@@ -37,6 +37,13 @@ public class AccountServices implements UserDetailsService{
 
        
     }
+
+    public Optional<Account> findByEmail(String email){
+
+        return accountRepository.findByEmail(email);
+    }
+
+
 
     public List<Account> findAll(){
 
@@ -52,7 +59,7 @@ public class AccountServices implements UserDetailsService{
        }
        Account account = optionalAccount.get();
        List<GrantedAuthority> grantedAuthority = new ArrayList<>();
-       grantedAuthority.add(new SimpleGrantedAuthority(account.getRole()));
+       grantedAuthority.add(new SimpleGrantedAuthority(account.getAuthorities()));
        return new User(account.getEmail(), account.getPassword(), grantedAuthority);
 
     }

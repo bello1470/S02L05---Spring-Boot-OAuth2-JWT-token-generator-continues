@@ -13,9 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AccountDTO {
     @Email
-    @Schema(description = "email address", example = "admin@bellotech.org", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "email address", example = "admin1@gmail.com", requiredMode = RequiredMode.REQUIRED)
     private String email;
-    @Size(min = 6, max = 18)
-    @Schema(description = "password", example = "password", requiredMode = RequiredMode.REQUIRED, maxLength = 18, minLength = 6)
+    @Size(min = 3, max = 18)
+    @Schema(description = "password", example = "333", requiredMode = RequiredMode.REQUIRED, maxLength = 18, minLength = 3)
     private String password;
 }

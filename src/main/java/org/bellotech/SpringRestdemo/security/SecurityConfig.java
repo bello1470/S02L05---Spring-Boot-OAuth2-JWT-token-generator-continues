@@ -86,7 +86,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/auth/token").permitAll()
                 .requestMatchers("/auth/users/add").permitAll()
-                .requestMatchers("/auth/users").hasAuthority("SCOPE_ROLE_USER")
+                .requestMatchers("/auth/users").hasAuthority("SCOPE_ADMIN")
+                 .requestMatchers("/auth/profile").authenticated()
+                 .requestMatchers("/auth/profile/password-update").authenticated()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/test").authenticated())
