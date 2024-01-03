@@ -27,7 +27,7 @@ public class SeedData implements CommandLineRunner{
         Account account2 = new Account();
         account2.setEmail("admin1@gmail.com");
         account2.setPassword("333");
-        account2.setAuthorities(Authority.ADMIN.toString());
+        account2.setAuthorities(Authority.ADMIN.toString() + " " + Authority.USER.toString());
         accountServices.save(account2);
     }
     
