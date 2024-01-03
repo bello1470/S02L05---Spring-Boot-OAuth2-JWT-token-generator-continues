@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.bellotech.SpringRestdemo.model.Account;
 import org.bellotech.SpringRestdemo.payload.auth.AccountDTO;
 import org.bellotech.SpringRestdemo.payload.auth.AccountViewDTO;
+import org.bellotech.SpringRestdemo.payload.auth.AuthorityDTO;
 import org.bellotech.SpringRestdemo.payload.auth.PasswordDTO;
 import org.bellotech.SpringRestdemo.payload.auth.ProfileDTO;
 import org.bellotech.SpringRestdemo.payload.auth.TokenDTO;
@@ -24,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -136,6 +138,27 @@ public AccountViewDTO passwordUpdate(@Valid @RequestBody PasswordDTO passwordDTO
     if (optionalAccount.isPresent()) {
         Account account= optionalAccount.get();
         account.setPassword(passwordDTO.getPassword());
+        accountServices.save(account);
+        AccountViewDTO accountViewDTO = new AccountViewDTO(account.getId(),account.getEmail(),account.getAuthorities());
+        return accountViewDTO;
+        
+    }
+    return null;
+
+}
+@SecurityRequirement(name = "bellotech-myPoject-api")
+@PutMapping(value="/profile/auth-upddate{id}", produces = "application/json")
+@Operation(summary = "Auth update")
+@ApiResponse(responseCode = "200", description = "Authority_update")
+@ApiResponse(responseCode = "401", description = "Token missing")
+@ApiResponse(responseCode = "403", description = "Token Error")
+public AccountViewDTO passwordUpdate(@Valid @RequestBody AuthorityDTO authorityDTO, @PathVariable long id){
+
+   
+    Optional <Account> optionalAccount = accountServices.findById(id);
+    if (optionalAccount.isPresent()) {
+        Account account= optionalAccount.get();
+        account.setAuthorities(authorityDTO.getAuthorities());
         accountServices.save(account);
         AccountViewDTO accountViewDTO = new AccountViewDTO(account.getId(),account.getEmail(),account.getAuthorities());
         return accountViewDTO;
