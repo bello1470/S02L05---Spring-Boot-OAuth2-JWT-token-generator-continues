@@ -63,4 +63,8 @@ public class AccountServices implements UserDetailsService{
        return new User(account.getEmail(), account.getPassword(), grantedAuthority);
 
     }
+
+    public Optional<Account> findById(long id) {
+        return accountRepository.findById(id);
+    }
 }
