@@ -38,6 +38,10 @@ public class AccountServices implements UserDetailsService{
        
     }
 
+    public void deleteByID(long id){
+        accountRepository.deleteById(id);
+    }
+
     public Optional<Account> findByEmail(String email){
 
         return accountRepository.findByEmail(email);
