@@ -24,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -167,5 +168,24 @@ public ResponseEntity <AccountViewDTO> passwordUpdate(@Valid @RequestBody Author
     }
     return new ResponseEntity<AccountViewDTO>(new AccountViewDTO(), HttpStatus.BAD_REQUEST);
 
+}
+
+@SecurityRequirement(name = "bellotech-myPoject-api")
+@DeleteMapping(value="/profile/delete-profile")
+@Operation(summary = "Delete Profile")
+@ApiResponse(responseCode = "200", description = "Profile Deleted")
+@ApiResponse(responseCode = "401", description = "Token missing")
+@ApiResponse(responseCode = "403", description = "Token Error")
+public ResponseEntity<String> deleteProfile (Authentication authentication){
+    String email = authentication.getName();
+    Optional <Account> optionalAccount = accountServices.findByEmail(email);
+    if (optionalAccount.isPresent()) {
+
+    accountServices.deleteByID(optionalAccount.get().getId());
+    return new ResponseEntity<>("Your profile has been deleted.",HttpStatus.OK);
+        
+    }
+    return new ResponseEntity<String>("Bad request", HttpStatus.BAD_REQUEST) ;
+    
 }
 }
