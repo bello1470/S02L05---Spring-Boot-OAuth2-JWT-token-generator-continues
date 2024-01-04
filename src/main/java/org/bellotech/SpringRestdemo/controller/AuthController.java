@@ -146,13 +146,14 @@ public AccountViewDTO passwordUpdate(@Valid @RequestBody PasswordDTO passwordDTO
     return null;
 
 }
+
 @SecurityRequirement(name = "bellotech-myPoject-api")
 @PutMapping(value="/users/{id}/auth-upddate", produces = "application/json")
 @Operation(summary = "Auth update")
 @ApiResponse(responseCode = "200", description = "Authority_update")
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token Error")
-public AccountViewDTO passwordUpdate(@Valid @RequestBody AuthorityDTO authorityDTO, @PathVariable long id){
+public ResponseEntity <AccountViewDTO> passwordUpdate(@Valid @RequestBody AuthorityDTO authorityDTO, @PathVariable long id){
 
    
     Optional <Account> optionalAccount = accountServices.findById(id);
@@ -161,10 +162,10 @@ public AccountViewDTO passwordUpdate(@Valid @RequestBody AuthorityDTO authorityD
         account.setAuthorities(authorityDTO.getAuthorities());
         accountServices.save(account);
         AccountViewDTO accountViewDTO = new AccountViewDTO(account.getId(),account.getEmail(),account.getAuthorities());
-        return accountViewDTO;
+        return  ResponseEntity.ok(accountViewDTO) ;
         
     }
-    return null;
+    return new ResponseEntity<AccountViewDTO>(new AccountViewDTO(), HttpStatus.BAD_REQUEST);
 
 }
 }
