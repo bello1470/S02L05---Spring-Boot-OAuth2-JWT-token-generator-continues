@@ -1,5 +1,7 @@
 package org.bellotech.SpringRestdemo.service;
 
+import java.util.List;
+
 import org.bellotech.SpringRestdemo.model.Album;
 import org.bellotech.SpringRestdemo.repository.AlbumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,5 +18,9 @@ public class AlbumService {
 
   return albumRepository.save(album);
     }
-    
+       public List<Album> findByAccount_id(long id){
+
+        return albumRepository.findByAccount_id(id);
+    }
+
 }
