@@ -84,16 +84,16 @@ public class SecurityConfig {
         
         .headers(headers -> headers.frameOptions().sameOrigin())
         .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/auth/token").permitAll()
-                .requestMatchers("/auth/users/add").permitAll()
-                .requestMatchers("/auth/users").hasAuthority("SCOPE_ADMIN")
-                 .requestMatchers("/auth/profile").authenticated()
-                 .requestMatchers("/auth/profile/password-update").authenticated()
-                 .requestMatchers("/auth/profile/delete-profile").authenticated()
-                 .requestMatchers("/auth//users/{id}/auth-upddate").hasAuthority("SCOPE_ADMIN")
+                .requestMatchers("/api/v1/auth/token").permitAll()
+                .requestMatchers("/api/v1/auth/users/add").permitAll()
+                .requestMatchers("/api/v1/auth/users").hasAuthority("SCOPE_ADMIN")
+                 .requestMatchers("/api/v1/auth/profile").authenticated()
+                 .requestMatchers("/api/v1/auth/profile/password-update").authenticated()
+                 .requestMatchers("/api/v1/auth/profile/delete-profile").authenticated()
+                 .requestMatchers("/api/v1/auth//users/{id}/auth-upddate").hasAuthority("SCOPE_ADMIN")
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/test").authenticated())
+                .requestMatchers("/").permitAll())
         .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
