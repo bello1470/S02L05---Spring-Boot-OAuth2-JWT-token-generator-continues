@@ -42,7 +42,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @Tag(name ="Auth Controller", description = "Controller for account manager" )
 @Slf4j
 public class AuthController {
