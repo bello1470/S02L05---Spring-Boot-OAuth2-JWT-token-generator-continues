@@ -1,6 +1,7 @@
 package org.bellotech.SpringRestdemo.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +12,6 @@ import org.bellotech.SpringRestdemo.payload.album.AlbumViewDTO;
 import org.bellotech.SpringRestdemo.service.AccountServices;
 import org.bellotech.SpringRestdemo.service.AlbumService;
 import org.bellotech.SpringRestdemo.utils.constant.AlbumError;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -31,7 +33,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/album")
+@RequestMapping("/api/v1/albums")
 @Tag(name ="Album Controller", description = "Controller for album and photo management" )
 @Slf4j
 public class AlbumController {
@@ -43,7 +45,7 @@ public class AlbumController {
 
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
-@PostMapping(value="/albums/add", consumes = "application/json", produces = "application/json")
+@PostMapping(value="/add", consumes = "application/json", produces = "application/json")
 @Operation(summary = "Add an Album")
 @ApiResponse(responseCode = "400", description = "please add valid name and description")
 @ApiResponse(responseCode = "201", description = "Album added")
@@ -76,7 +78,7 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
 }
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
-@GetMapping(value="/albums", consumes = "application/json", produces = "application/json")
+@GetMapping(value="/", consumes = "application/json", produces = "application/json")
 @Operation(summary = "list all Album")
 @ApiResponse(responseCode = "200",description = "List of albums")
 @ApiResponse(responseCode = "401", description = "Token missing")
@@ -98,5 +100,20 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
 
     }
   
+    @PostMapping(value = "/photos", consumes = {"multipart/form-data"})
 
+    @Operation(summary = "Upload photos")
+
+public List<String> photos (@RequestPart (required = true ) MultipartFile [] files  ){
+
+    List<String> fileNames = new ArrayList<>();
+    Arrays.asList(files).stream().forEach(file  -> { fileNames
+    
+    .add(file.getOriginalFilename());
+    });
+    return fileNames;
+
+
+
+}
 }
