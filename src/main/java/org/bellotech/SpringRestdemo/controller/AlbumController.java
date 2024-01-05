@@ -1,9 +1,14 @@
 package org.bellotech.SpringRestdemo.controller;
 
+import java.util.Optional;
+
+import org.bellotech.SpringRestdemo.model.Account;
 import org.bellotech.SpringRestdemo.model.Album;
-import org.bellotech.SpringRestdemo.payload.admin.AlbumDTO;
-import org.bellotech.SpringRestdemo.payload.admin.AlbumViewDTO;
+import org.bellotech.SpringRestdemo.payload.album.AlbumDTO;
+import org.bellotech.SpringRestdemo.payload.album.AlbumViewDTO;
 import org.bellotech.SpringRestdemo.service.AccountServices;
+import org.bellotech.SpringRestdemo.service.AlbumService;
+import org.bellotech.SpringRestdemo.utils.constant.AlbumError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +34,8 @@ public class AlbumController {
     @Autowired
     private AccountServices accountServices;
 
-    private Album
+    @Autowired
+    private AlbumService albumService;
 
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
@@ -46,11 +52,23 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
         album.setDescription(albumDTO.getDescription());
 
         String email = authentication.getName();
+        Optional<Account> optionalAccount = accountServices.findByEmail(email);
+        Account account = optionalAccount.get();
+        album.setAccount(account);
+
+        album = albumService.save(album);
+
+        AlbumViewDTO albumViewDTO = new AlbumViewDTO(album.getId(), album.getName(), album.getDescription());
+
+        return ResponseEntity.ok(albumViewDTO);
 
 
     } catch(Exception e){
 
+        log.debug(AlbumError.ADD_ALBUM_ERROR.toString() + ":" + e.getMessage() );
+
     }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 }
 
 }
