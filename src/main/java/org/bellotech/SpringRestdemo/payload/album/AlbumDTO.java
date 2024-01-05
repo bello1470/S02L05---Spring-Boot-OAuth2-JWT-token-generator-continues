@@ -8,21 +8,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Setter
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlbumDTO {
 
     @NotBlank
     @Schema(description = "Album name", example = "Travel", requiredMode = RequiredMode.REQUIRED)
-    private String description;
+    private String name;
 
 
     @NotBlank
     @Schema(description = "Description of the name", example = "Description", requiredMode = RequiredMode.REQUIRED)
-    private String name;
+    private String description;
     
 }
