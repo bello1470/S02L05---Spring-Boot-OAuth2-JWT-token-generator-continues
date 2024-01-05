@@ -1,5 +1,7 @@
 package org.bellotech.SpringRestdemo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.bellotech.SpringRestdemo.model.Account;
@@ -9,10 +11,12 @@ import org.bellotech.SpringRestdemo.payload.album.AlbumViewDTO;
 import org.bellotech.SpringRestdemo.service.AccountServices;
 import org.bellotech.SpringRestdemo.service.AlbumService;
 import org.bellotech.SpringRestdemo.utils.constant.AlbumError;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/album")
-@Tag(name ="Auth Controller", description = "Controller for album and photo management" )
+@Tag(name ="Album Controller", description = "Controller for album and photo management" )
 @Slf4j
 public class AlbumController {
     @Autowired
@@ -43,7 +47,7 @@ public class AlbumController {
 @Operation(summary = "Add an Album")
 @ApiResponse(responseCode = "400", description = "please add valid name and description")
 @ApiResponse(responseCode = "201", description = "Album added")
-@ResponseStatus(HttpStatus.OK)
+@ResponseStatus(HttpStatus.CREATED)
 public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO albumDTO, Authentication authentication){
 
     try{
@@ -70,5 +74,29 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
     }
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 }
+
+@SecurityRequirement(name = "bellotech-myPoject-api")
+@GetMapping(value="/albums", consumes = "application/json", produces = "application/json")
+@Operation(summary = "list all Album")
+@ApiResponse(responseCode = "200",description = "List of albums")
+@ApiResponse(responseCode = "401", description = "Token missing")
+@ApiResponse(responseCode = "403", description = "Token error")
+@ResponseStatus(HttpStatus.OK)
+public List<AlbumViewDTO>  listAlbum (Authentication authentication){
+
+    String email = authentication.getName();
+    Optional <Account> optionalAccount = accountServices.findByEmail(email);
+    
+
+        Account account = optionalAccount.get();
+        List<AlbumViewDTO> albums = new ArrayList<>();
+        for (Album album : albumService.findByAccount_id(account.getId())){
+        albums.add(new AlbumViewDTO(album.getId(),album.getName(),album.getDescription()));
+        }
+
+    return albums;
+
+    }
+  
 
 }
