@@ -155,9 +155,7 @@ public AccountViewDTO passwordUpdate(@Valid @RequestBody PasswordDTO passwordDTO
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token Error")
 public ResponseEntity <AccountViewDTO> passwordUpdate(@Valid @RequestBody AuthorityDTO authorityDTO, @PathVariable long id){
-
-   
-    Optional <Account> optionalAccount = accountServices.findById(id);
+Optional <Account> optionalAccount = accountServices.findById(id);
     if (optionalAccount.isPresent()) {
         Account account= optionalAccount.get();
         account.setAuthorities(authorityDTO.getAuthorities());
@@ -167,7 +165,6 @@ public ResponseEntity <AccountViewDTO> passwordUpdate(@Valid @RequestBody Author
         
     }
     return new ResponseEntity<AccountViewDTO>(new AccountViewDTO(), HttpStatus.BAD_REQUEST);
-
 }
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
