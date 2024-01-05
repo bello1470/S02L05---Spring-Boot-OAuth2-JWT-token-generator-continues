@@ -93,7 +93,7 @@ public class SecurityConfig {
                  .requestMatchers("/api/v1/auth//users/{id}/auth-upddate").hasAuthority("SCOPE_ADMIN")
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/").permitAll())
+                .requestMatchers("/**").permitAll())
         .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
