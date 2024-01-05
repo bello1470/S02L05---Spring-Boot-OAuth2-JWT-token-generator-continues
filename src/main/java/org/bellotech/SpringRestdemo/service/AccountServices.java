@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bellotech.SpringRestdemo.model.Account;
+import org.bellotech.SpringRestdemo.model.Album;
 import org.bellotech.SpringRestdemo.repository.AccountRepository;
 import org.bellotech.SpringRestdemo.utils.constant.Authority;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,4 +72,5 @@ public class AccountServices implements UserDetailsService{
     public Optional<Account> findById(long id) {
         return accountRepository.findById(id);
     }
+ 
 }
