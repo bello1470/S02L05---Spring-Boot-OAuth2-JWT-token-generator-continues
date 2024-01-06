@@ -156,9 +156,5 @@ public ResponseEntity<String> photos (@RequestPart (required = true ) MultipartF
   
     });
     return null;
-
-
-
-
 }
 }
