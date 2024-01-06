@@ -177,10 +177,8 @@ public ResponseEntity<String> deleteProfile (Authentication authentication){
     String email = authentication.getName();
     Optional <Account> optionalAccount = accountServices.findByEmail(email);
     if (optionalAccount.isPresent()) {
-
     accountServices.deleteByID(optionalAccount.get().getId());
-    return new ResponseEntity<>("Your profile has been deleted.",HttpStatus.OK);
-        
+    return new ResponseEntity<>("Your profile has been deleted.",HttpStatus.OK);    
     }
     return new ResponseEntity<String>("Bad request", HttpStatus.BAD_REQUEST) ;
     
