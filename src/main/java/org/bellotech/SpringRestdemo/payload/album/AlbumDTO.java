@@ -18,12 +18,12 @@ import lombok.ToString;
 @NoArgsConstructor
 public class AlbumDTO {
 
-    @NotBlank
+    
     @Schema(description = "Album name", example = "Travel", requiredMode = RequiredMode.REQUIRED)
     private String name;
 
 
-    @NotBlank
+   
     @Schema(description = "Description of the name", example = "Description", requiredMode = RequiredMode.REQUIRED)
     private String description;
     
