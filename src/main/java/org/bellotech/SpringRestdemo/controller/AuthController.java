@@ -149,7 +149,7 @@ public AccountViewDTO passwordUpdate(@Valid @RequestBody PasswordDTO passwordDTO
 }
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
-@PutMapping(value="/users/{id}/auth-upddate", produces = "application/json")
+@PutMapping(value="/users/{id}/auth-update", produces = "application/json")
 @Operation(summary = "Auth update")
 @ApiResponse(responseCode = "200", description = "Authority_update")
 @ApiResponse(responseCode = "401", description = "Token missing")
