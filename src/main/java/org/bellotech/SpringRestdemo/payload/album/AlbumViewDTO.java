@@ -21,12 +21,12 @@ public class AlbumViewDTO {
 private long id;
 
 
-    @NotBlank
+   
     @Schema(description = "Album name", example = "Travel", requiredMode = RequiredMode.REQUIRED)
     private String name;
 
 
-    @NotBlank
+   
     @Schema(description = "Description of the name", example = "Description", requiredMode = RequiredMode.REQUIRED)
     private String description;
     
