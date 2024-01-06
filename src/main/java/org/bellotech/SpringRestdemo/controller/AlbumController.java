@@ -83,13 +83,11 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
 @ApiResponse(responseCode = "200",description = "List of albums")
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token error")
-@ResponseStatus(HttpStatus.OK)
+
 public List<AlbumViewDTO>  listAlbum (Authentication authentication){
 
     String email = authentication.getName();
     Optional <Account> optionalAccount = accountServices.findByEmail(email);
-    
-
         Account account = optionalAccount.get();
         List<AlbumViewDTO> albums = new ArrayList<>();
         for (Album album : albumService.findByAccount_id(account.getId())){
@@ -101,7 +99,7 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
     }
   
     @PostMapping(value = "/photos", consumes = {"multipart/form-data"})
-
+    @SecurityRequirement(name = "bellotech-myPoject-api")
     @Operation(summary = "Upload photos")
 
 public List<String> photos (@RequestPart (required = true ) MultipartFile [] files  ){
