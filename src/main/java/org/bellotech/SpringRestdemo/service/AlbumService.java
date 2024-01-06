@@ -1,6 +1,7 @@
 package org.bellotech.SpringRestdemo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bellotech.SpringRestdemo.model.Album;
 import org.bellotech.SpringRestdemo.repository.AlbumRepository;
@@ -23,4 +24,7 @@ public class AlbumService {
         return albumRepository.findByAccount_id(id);
     }
 
+    public Optional<Album> findById(long id ){
+        return albumRepository.findById(id);
+    }
 }
