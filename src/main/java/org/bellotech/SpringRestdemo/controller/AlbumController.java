@@ -1,10 +1,15 @@
 package org.bellotech.SpringRestdemo.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.bellotech.SpringRestdemo.model.Account;
 import org.bellotech.SpringRestdemo.model.Album;
 import org.bellotech.SpringRestdemo.payload.album.AlbumDTO;
@@ -12,11 +17,13 @@ import org.bellotech.SpringRestdemo.payload.album.AlbumViewDTO;
 import org.bellotech.SpringRestdemo.service.AccountServices;
 import org.bellotech.SpringRestdemo.service.AlbumService;
 import org.bellotech.SpringRestdemo.utils.constant.AlbumError;
+import org.bellotech.SpringRestdemo.utils.constant.appUtils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -97,19 +104,59 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
     return albums;
 
     }
-  
-    @PostMapping(value = "/photos", consumes = {"multipart/form-data"})
+    @ApiResponse(responseCode = "400", description = "please check the payload or token")
+    @PostMapping(value = "/{album_id}/photos", consumes = {"multipart/form-data"})
     @SecurityRequirement(name = "bellotech-myPoject-api")
     @Operation(summary = "Upload photos")
 
-public List<String> photos (@RequestPart (required = true ) MultipartFile [] files  ){
+public ResponseEntity<String> photos (@RequestPart (required = true ) MultipartFile [] files , @PathVariable long album_id, Authentication authentication){
 
-    List<String> fileNames = new ArrayList<>();
-    Arrays.asList(files).stream().forEach(file  -> { fileNames
+    // now is to provide func. that only profile that is long in to can only upload the photos 
+    // according to the path giving
+    String email = authentication.getName();
+    Optional<Account> optionalAOptional = accountServices.findByEmail(email);
+    Account account = optionalAOptional.get();
+    Optional<Album> optionalAlbum = albumService.findById(album_id);
+    Album album;
+    if (optionalAlbum.isPresent()) {
+        album = optionalAlbum.get();
+        // if the 2 id is not matched means not the owner of the album
+        // the account id and album id 
+        if (account.getId() != album.getAccount().getId()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }else{
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+    List<String> fileNamesWithSuccess = new ArrayList<>();
+    List<String> fileNamesWithError = new ArrayList<>();
+    Arrays.asList(files).stream().forEach(file  -> {
+    String contentType = file.getContentType();
+    if (contentType.equals("image/png") || 
+     contentType.equals("image/jpg") || 
+     contentType.equals("image/jpeg")){
+        fileNamesWithSuccess.add(file.getOriginalFilename());
+        int lenght = 10;
+        boolean usLetters = true;
+        boolean useNumbers = true ;
+        try {
+            String fileName = file.getOriginalFilename();
+            String generatedString = RandomStringUtils.random(lenght,usLetters,useNumbers);
+            String final_photo_name = generatedString + fileName;
+            String absolute_fileLocation = AppUtils.get_photo_upload_path(final_photo_name, album_id);
+            Path path = Paths.get(absolute_fileLocation);
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+    }
     
-    .add(file.getOriginalFilename());
+  
     });
-    return fileNames;
+    return null;
+
 
 
 
