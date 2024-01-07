@@ -12,10 +12,12 @@ import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bellotech.SpringRestdemo.model.Account;
 import org.bellotech.SpringRestdemo.model.Album;
+import org.bellotech.SpringRestdemo.model.Photo;
 import org.bellotech.SpringRestdemo.payload.album.AlbumDTO;
 import org.bellotech.SpringRestdemo.payload.album.AlbumViewDTO;
 import org.bellotech.SpringRestdemo.service.AccountServices;
 import org.bellotech.SpringRestdemo.service.AlbumService;
+import org.bellotech.SpringRestdemo.service.PhotoService;
 import org.bellotech.SpringRestdemo.utils.constant.AlbumError;
 import org.bellotech.SpringRestdemo.utils.constant.appUtils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,8 @@ public class AlbumController {
     @Autowired
     private AlbumService albumService;
 
+    @Autowired
+    private PhotoService photoService;
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
 @PostMapping(value="/add", consumes = "application/json", produces = "application/json")
@@ -109,7 +113,7 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
     @SecurityRequirement(name = "bellotech-myPoject-api")
     @Operation(summary = "Upload photos")
 
-public ResponseEntity<String> photos (@RequestPart (required = true ) MultipartFile [] files , @PathVariable long album_id, Authentication authentication){
+public ResponseEntity<List<String>> photos (@RequestPart (required = true ) MultipartFile [] files , @PathVariable long album_id, Authentication authentication){
 
     // now is to provide func. that only profile that is long in to can only upload the photos 
     // according to the path giving
@@ -147,14 +151,22 @@ public ResponseEntity<String> photos (@RequestPart (required = true ) MultipartF
             String absolute_fileLocation = AppUtils.get_photo_upload_path(final_photo_name, album_id);
             Path path = Paths.get(absolute_fileLocation);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            Photo photo = new Photo();
+            photo.setName(fileName); 
+            photo.setFileName(final_photo_name);
+            photo.setOriginalFileName(fileName);
+            photo.setAlbum(album);
+            photoService.save(photo);
         } catch (Exception e) {
             // TODO: handle exception
         }
         
+    }else{
+        fileNamesWithError.add(file.getOriginalFilename());
     }
     
   
     });
-    return null;
+    return ResponseEntity.ok( fileNamesWithSuccess);
 }
 }
