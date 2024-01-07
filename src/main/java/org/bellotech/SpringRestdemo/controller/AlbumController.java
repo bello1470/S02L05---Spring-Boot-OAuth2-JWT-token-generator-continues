@@ -21,6 +21,7 @@ import org.bellotech.SpringRestdemo.model.Album;
 import org.bellotech.SpringRestdemo.model.Photo;
 import org.bellotech.SpringRestdemo.payload.album.AlbumDTO;
 import org.bellotech.SpringRestdemo.payload.album.AlbumViewDTO;
+import org.bellotech.SpringRestdemo.payload.album.PhotoDTO;
 import org.bellotech.SpringRestdemo.service.AccountServices;
 import org.bellotech.SpringRestdemo.service.AlbumService;
 import org.bellotech.SpringRestdemo.service.PhotoService;
@@ -89,7 +90,7 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
 
         album = albumService.save(album);
 
-        AlbumViewDTO albumViewDTO = new AlbumViewDTO(album.getId(), album.getName(), album.getDescription());
+        AlbumViewDTO albumViewDTO = new AlbumViewDTO(album.getId(), album.getName(), album.getDescription(),null);
 
         return ResponseEntity.ok(albumViewDTO);
 
@@ -104,7 +105,7 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
 @GetMapping(value="/", consumes = "application/json", produces = "application/json")
-@Operation(summary = "list all Album")
+@Operation(summary = "list album API")
 @ApiResponse(responseCode = "200",description = "List of albums")
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token error")
@@ -116,7 +117,14 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
         Account account = optionalAccount.get();
         List<AlbumViewDTO> albums = new ArrayList<>();
         for (Album album : albumService.findByAccount_id(account.getId())){
-        albums.add(new AlbumViewDTO(album.getId(),album.getName(),album.getDescription()));
+            List<PhotoDTO> photos = new ArrayList<>();
+            for(Photo photo: photoService.findByAlbumId(album.getId())){
+                String link = "/albums/"+album.getId()+"/photos/"+photo.getId()+"/download-photo";
+                photos.add(new PhotoDTO(photo.getId(), photo.getName(), photo.getDescription(), 
+                photo.getFileName(), link));
+
+            }
+            albums.add(new AlbumViewDTO(album.getId(), album.getName(), album.getDescription(), photos));
         }
 
     return albums;
