@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Long>{
 
-    //List<Photo> findByAccount_id(long id);
+    List<Photo> findByAlbum_id(long id);
     
 }
