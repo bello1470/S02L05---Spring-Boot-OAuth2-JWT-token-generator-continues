@@ -26,10 +26,10 @@ public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
-    private String description;
+   
 
     private String name;
-
+ private String description;
     @ManyToOne
     @JoinColumn(name = "Account_id", referencedColumnName = "id", nullable = false)
     private Account account;
