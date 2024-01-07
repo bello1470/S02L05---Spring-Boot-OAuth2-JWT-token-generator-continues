@@ -1,6 +1,9 @@
 package org.bellotech.SpringRestdemo.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.http.HttpHeaders;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,10 +13,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bellotech.SpringRestdemo.model.Account;
 import org.bellotech.SpringRestdemo.model.Album;
@@ -26,7 +30,9 @@ import org.bellotech.SpringRestdemo.service.PhotoService;
 import org.bellotech.SpringRestdemo.utils.constant.AlbumError;
 import org.bellotech.SpringRestdemo.utils.constant.appUtils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -190,5 +196,50 @@ public ResponseEntity<List<HashMap<String, List<String>>>> photos(@RequestPart(r
         
         return ResponseEntity.ok(response);
 
+    }
+
+    @GetMapping("albums/{album_id}/photos/{photo_id}/download-photo")
+    @SecurityRequirement(name = "studyeasy-demo-api")
+    public ResponseEntity<?> downloadPhoto(@PathVariable("album_id") long album_id,
+            @PathVariable("photo_id") long photo_id, Authentication authentication) {
+String email = authentication.getName();
+                Optional<Account> optionalAccount = accountServices.findByEmail(email);
+                Account account = optionalAccount.get();
+        
+                Optional<Album> optionalAlbum = albumService.findById(album_id);
+                Album album;
+                if (optionalAlbum.isPresent()) {
+                    album = optionalAlbum.get();
+                    if (account.getId() != album.getAccount().getId()) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+                    }
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+                }
+        Optional<Photo> optionalPhoto = photoService.findById(photo_id);
+        if(optionalPhoto.isPresent()){
+            Photo photo = optionalPhoto.get();
+            Resource resource = null;
+            try {
+                resource = AppUtils.getFileAsResource(album_id,PHOTOS_FOLDER_NAME, photo.getFileName());
+            } catch (IOException e) {
+               return ResponseEntity.internalServerError().build();
+            }
+
+            if(resource == null){
+                return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+            }
+            String contentType = "application/octet-stream";
+            String headerValue = "attachment; filename=\"" + photo.getOriginalFileName() + "\"";
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                    .body(resource);
+
+
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 }
