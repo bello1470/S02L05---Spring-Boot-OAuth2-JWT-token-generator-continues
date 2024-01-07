@@ -1,13 +1,18 @@
 package org.bellotech.SpringRestdemo.controller;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.awt.image.BufferedImage;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bellotech.SpringRestdemo.model.Account;
@@ -46,6 +51,11 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name ="Album Controller", description = "Controller for album and photo management" )
 @Slf4j
 public class AlbumController {
+
+    static final String PHOTOS_FOLDER_NAME = "photos";
+    static final String THUMBNAIL_FOLDER_NAME = "thumbnails";
+    static final int THUMBNAIL_WIDTH = 300;
+
     @Autowired
     private AccountServices accountServices;
 
@@ -113,60 +123,72 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
     @SecurityRequirement(name = "bellotech-myPoject-api")
     @Operation(summary = "Upload photos")
 
-public ResponseEntity<List<String>> photos (@RequestPart (required = true ) MultipartFile [] files , @PathVariable long album_id, Authentication authentication){
-
-    // now is to provide func. that only profile that is long in to can only upload the photos 
-    // according to the path giving
-    String email = authentication.getName();
-    Optional<Account> optionalAOptional = accountServices.findByEmail(email);
-    Account account = optionalAOptional.get();
-    Optional<Album> optionalAlbum = albumService.findById(album_id);
-    Album album;
-    if (optionalAlbum.isPresent()) {
-        album = optionalAlbum.get();
-        // if the 2 id is not matched means not the owner of the album
-        // the account id and album id 
-        if (account.getId() != album.getAccount().getId()){
+public ResponseEntity<List<HashMap<String, List<String>>>> photos(@RequestPart(required = true) MultipartFile[] files, 
+    @PathVariable long album_id, Authentication authentication){
+        String email = authentication.getName();
+        Optional<Account> optionalAccount = accountServices.findByEmail(email);
+        Account account = optionalAccount.get();
+        Optional<Album> optionaAlbum = albumService.findById(album_id);
+        Album album;
+        if(optionaAlbum.isPresent()){
+            album = optionaAlbum.get();
+            if(account.getId() != album.getAccount().getId()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+        }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-    }else{
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    }
 
-    List<String> fileNamesWithSuccess = new ArrayList<>();
-    List<String> fileNamesWithError = new ArrayList<>();
-    Arrays.asList(files).stream().forEach(file  -> {
-    String contentType = file.getContentType();
-    if (contentType.equals("image/png") || 
-     contentType.equals("image/jpg") || 
-     contentType.equals("image/jpeg")){
-        fileNamesWithSuccess.add(file.getOriginalFilename());
-        int lenght = 10;
-        boolean usLetters = true;
-        boolean useNumbers = true ;
-        try {
-            String fileName = file.getOriginalFilename();
-            String generatedString = RandomStringUtils.random(lenght,usLetters,useNumbers);
-            String final_photo_name = generatedString + fileName;
-            String absolute_fileLocation = AppUtils.get_photo_upload_path(final_photo_name, album_id);
-            Path path = Paths.get(absolute_fileLocation);
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            Photo photo = new Photo();
-            photo.setName(fileName); 
-            photo.setFileName(final_photo_name);
-            photo.setOriginalFileName(fileName);
-            photo.setAlbum(album);
-            photoService.save(photo);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+        List<String> fileNamesWithSuccess = new ArrayList<>();
+        List<String> fileNamesWithError = new ArrayList<>();
+
+        Arrays.asList(files).stream().forEach(file -> { 
+            String contentType = file.getContentType();
+            if(contentType.equals("image/png")
+            || contentType.equals("image/jpg")
+            || contentType.equals("image/jpeg")){
+                fileNamesWithSuccess.add(file.getOriginalFilename());
+
+                int length = 10;
+                boolean useLetters = true;
+                boolean useNumbers = true;
+
+                try {
+                    String fileName = file.getOriginalFilename();
+                    String generatedString = RandomStringUtils.random(length, useLetters,useNumbers);
+                    String final_photo_name = generatedString+fileName;
+                    String absolute_fileLocation = AppUtils.get_photo_upload_path(final_photo_name, PHOTOS_FOLDER_NAME,  album_id);
+                    Path path = Paths.get(absolute_fileLocation);
+                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                    Photo photo = new Photo();
+                    photo.setName(fileName);
+                    photo.setFileName(final_photo_name);
+                    photo.setOriginalFileName(fileName);
+                    photo.setAlbum(album);
+                    photoService.save(photo);
+
+                    BufferedImage thumbImg = AppUtils.getThumbnail(file, THUMBNAIL_WIDTH);
+                    File thumbnail_location = new File(AppUtils.get_photo_upload_path(final_photo_name, THUMBNAIL_FOLDER_NAME, album_id));
+                    ImageIO.write(thumbImg, file.getContentType().split("/")[1], thumbnail_location);
+
+                } catch (Exception e) {
+                    log.debug(AlbumError.PHOTO_UPLOAD_ERROR.toString() + ": "+ e.getMessage());
+                    fileNamesWithError.add(file.getOriginalFilename());
+                }
+
+            }else{
+                fileNamesWithError.add(file.getOriginalFilename());
+            }
+        });
+
+        HashMap<String, List<String>> result = new HashMap<>();
+        result.put("SUCCESS", fileNamesWithSuccess);
+        result.put("ERRORS", fileNamesWithError);
         
-    }else{
-        fileNamesWithError.add(file.getOriginalFilename());
+        List<HashMap<String, List<String>>> response = new ArrayList<>();
+        response.add(result);
+        
+        return ResponseEntity.ok(response);
+
     }
-    
-  
-    });
-    return ResponseEntity.ok( fileNamesWithSuccess);
-}
 }
