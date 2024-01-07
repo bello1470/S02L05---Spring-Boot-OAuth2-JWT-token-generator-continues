@@ -17,7 +17,7 @@ import lombok.ToString;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private long id;
 
     private String email;
     private String password;
