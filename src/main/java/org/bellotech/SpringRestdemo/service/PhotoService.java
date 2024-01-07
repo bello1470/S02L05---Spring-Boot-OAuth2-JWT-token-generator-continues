@@ -1,5 +1,6 @@
 package org.bellotech.SpringRestdemo.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.bellotech.SpringRestdemo.model.Photo;
@@ -21,5 +22,8 @@ public class PhotoService {
 
     public Optional<Photo> findById(long id ){
         return photoRepository.findById(id);
+    }
+        public List<Photo> findByAlbumId(long id){
+        return photoRepository.findByAlbum_id(id);
     }
 }
