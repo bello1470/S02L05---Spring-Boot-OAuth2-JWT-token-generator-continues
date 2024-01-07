@@ -1,8 +1,9 @@
 package org.bellotech.SpringRestdemo.payload.album;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,7 @@ private long id;
    
     @Schema(description = "Description of the name", example = "Description", requiredMode = RequiredMode.REQUIRED)
     private String description;
+
+    private List<PhotoDTO> photos;
     
 }
