@@ -1,6 +1,5 @@
 package org.bellotech.SpringRestdemo.model;
 
-import org.hibernate.annotations.ManyToAny;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
