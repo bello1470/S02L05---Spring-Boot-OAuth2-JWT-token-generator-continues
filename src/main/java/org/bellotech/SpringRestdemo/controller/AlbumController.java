@@ -52,7 +52,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/albums")
+@RequestMapping("/api/v1")
 @Tag(name ="Album Controller", description = "Controller for album and photo management" )
 @Slf4j
 public class AlbumController {
@@ -71,7 +71,7 @@ public class AlbumController {
     private PhotoService photoService;
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
-@PostMapping(value="/add", consumes = "application/json", produces = "application/json")
+@PostMapping(value="/albums/add", consumes = "application/json", produces = "application/json")
 @Operation(summary = "Add an Album")
 @ApiResponse(responseCode = "400", description = "please add valid name and description")
 @ApiResponse(responseCode = "201", description = "Album added")
@@ -98,19 +98,20 @@ public ResponseEntity<AlbumViewDTO> addAlbum (@Valid @RequestBody AlbumDTO album
     } catch(Exception e){
 
         log.debug(AlbumError.ADD_ALBUM_ERROR.toString() + ":" + e.getMessage() );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
     }
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    
 }
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
-@GetMapping(value="/", consumes = "application/json", produces = "application/json")
+@GetMapping(value="/albums", consumes = "application/json", produces = "application/json")
 @Operation(summary = "list album API")
 @ApiResponse(responseCode = "200",description = "List of albums")
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token error")
 
-public List<AlbumViewDTO>  listAlbum (Authentication authentication){
+public List<AlbumViewDTO>  albums (Authentication authentication){
 
     String email = authentication.getName();
     Optional <Account> optionalAccount = accountServices.findByEmail(email);
@@ -131,7 +132,7 @@ public List<AlbumViewDTO>  listAlbum (Authentication authentication){
 
     }
     @ApiResponse(responseCode = "400", description = "please check the payload or token")
-    @PostMapping(value = "/{album_id}/photos", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/albums/{album_id}/photos", consumes = {"multipart/form-data"})
     @SecurityRequirement(name = "bellotech-myPoject-api")
     @Operation(summary = "Upload photos")
 
@@ -205,7 +206,7 @@ public ResponseEntity<List<HashMap<String, List<String>>>> photos(@RequestPart(r
     }
 
     @GetMapping("albums/{album_id}/photos/{photo_id}/download-photo")
-    @SecurityRequirement(name = "studyeasy-demo-api")
+@SecurityRequirement(name = "bellotech-myPoject-api")
     public ResponseEntity<?> downloadPhoto(@PathVariable("album_id") long album_id,
             @PathVariable("photo_id") long photo_id, Authentication authentication) {
 
@@ -213,7 +214,7 @@ public ResponseEntity<List<HashMap<String, List<String>>>> photos(@RequestPart(r
     }
 
     @GetMapping("albums/{album_id}/photos/{photo_id}/download-thumbnail")
-    @SecurityRequirement(name = "studyeasy-demo-api")
+@SecurityRequirement(name = "bellotech-myPoject-api")
     public ResponseEntity<?> downloadThumbnail(@PathVariable("album_id") long album_id,
             @PathVariable("photo_id") long photo_id, Authentication authentication) {
 
@@ -262,5 +263,36 @@ public ResponseEntity<List<HashMap<String, List<String>>>> photos(@RequestPart(r
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+    @GetMapping(value = "/albums/{album_id}", produces = "application/json")
+    @ApiResponse(responseCode = "200", description = "List of albums")
+    @ApiResponse(responseCode = "401", description = "Token missing")
+    @ApiResponse(responseCode = "403", description = "Token Error")
+    @Operation(summary = "List album by album ID")
+@SecurityRequirement(name = "bellotech-myPoject-api")
+    public ResponseEntity<AlbumViewDTO> albums_by_id(@PathVariable long album_id, Authentication authentication) {
+        String email = authentication.getName();
+        Optional<Account> optionalAccount = accountServices.findByEmail(email);
+        Account account = optionalAccount.get();
+        Optional<Album> optionalAlbum = albumService.findById(album_id);
+        Album album;
+        if (optionalAlbum.isPresent()) {
+            album = optionalAlbum.get();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        if (account.getId() != album.getAccount().getId()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        List<PhotoDTO> photos = new ArrayList<>();
+        for (Photo photo : photoService.findByAlbumId(album.getId())) {
+            String link = "/albums/"+album.getId()+"/photos/"+photo.getId()+"/download-photo";
+            photos.add(new PhotoDTO(photo.getId(), photo.getName(), photo.getDescription(), photo.getFileName(), link));
+        }
+
+        AlbumViewDTO albumViewDTO = new AlbumViewDTO(album.getId(), album.getName(), album.getDescription(), photos);
+
+        return ResponseEntity.ok(albumViewDTO);
     }
 }
