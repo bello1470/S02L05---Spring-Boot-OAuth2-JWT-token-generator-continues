@@ -1,5 +1,6 @@
 package org.bellotech.SpringRestdemo.utils.constant.appUtils;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,12 +10,9 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 import org.imgscalr.Scalr;
-import java.awt.image.BufferedImage;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
-import org.imgscalr.Scalr;
 public class AppUtils {
 
      // we created String name, receiving filename 
