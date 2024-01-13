@@ -164,7 +164,7 @@ Optional <Account> optionalAccount = accountServices.findById(id);
         return  ResponseEntity.ok(accountViewDTO) ;
         
     }
-    return new ResponseEntity<AccountViewDTO>(new AccountViewDTO(), HttpStatus.BAD_REQUEST);
+    return ne ResponseEntity<AccountViewDTO>(new AccountViewDTO(), HttpStatus.BAD_REQUEST);
 }
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
