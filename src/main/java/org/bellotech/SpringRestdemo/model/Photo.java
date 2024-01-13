@@ -23,7 +23,7 @@ public class Photo {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    private int galle
+    private int ga
 
     private String name;
 
