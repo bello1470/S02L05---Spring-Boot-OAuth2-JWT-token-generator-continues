@@ -96,7 +96,7 @@ return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 @ApiResponse(responseCode = "403", description = "Token Error")
 public List<AccountViewDTO> Users(){
 
-    List<AccountViewDTO> accounts = new ArrayList<>()
+    List<AccountViewDTO> accounts = new ArrayList<>();
 for (Account account : accountServices.findAll()) {
     accounts.add(new AccountViewDTO(account.getId(),account.getEmail(),account.getAuthorities()));
     
