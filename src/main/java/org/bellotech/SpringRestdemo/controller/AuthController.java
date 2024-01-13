@@ -123,7 +123,7 @@ public ProfileDTO profile(Authentication authentication){
   return profileDTO;
         
     }
-    return null
+    return null;
     
 }
 @SecurityRequirement(name = "bellotech-myPoject-api")
