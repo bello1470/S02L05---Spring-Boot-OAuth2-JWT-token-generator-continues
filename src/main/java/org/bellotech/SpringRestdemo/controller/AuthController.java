@@ -161,7 +161,7 @@ Optional <Account> optionalAccount = accountServices.findById(id);
         account.setAuthorities(authorityDTO.getAuthorities());
         accountServices.save(account);
         AccountViewDTO accountViewDTO = new AccountViewDTO(account.getId(),account.getEmail(),account.getAuthorities());
-        return  nResponseEntity.ok(accountViewDTO) ;
+        return  ResponseEntity.ok(accountViewDTO) ;
         
     }
     return new ResponseEntity<AccountViewDTO>(new AccountViewDTO(), HttpStatus.BAD_REQUEST);
