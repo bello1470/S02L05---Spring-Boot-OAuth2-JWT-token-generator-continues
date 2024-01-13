@@ -22,7 +22,7 @@ public class AlbumDTO {
 
 
    
-    @Schema(description = "Description of t name", example = "Description", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "Description of the name", example = "Description", requiredMode = RequiredMode.REQUIRED)
     private String description;
     
 }
