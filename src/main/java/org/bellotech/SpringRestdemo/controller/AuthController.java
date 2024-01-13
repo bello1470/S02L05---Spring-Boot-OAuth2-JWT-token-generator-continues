@@ -91,7 +91,7 @@ return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 @SecurityRequirement(name = "bellotech-myPoject-api")
 @GetMapping(value="/users", produces = "application/json")
 @Operation(summary = "List of Users")
-@ApiResponse(responseCode = "20", description = "List of users")
+@ApiResponse(responseCode = "200", description = "List of users")
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token Error")
 public List<AccountViewDTO> Users(){
