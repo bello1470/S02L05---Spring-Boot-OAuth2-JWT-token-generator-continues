@@ -107,7 +107,7 @@ for (Account account : accountServices.findAll()) {
 
 @SecurityRequirement(name = "bellotech-myPoject-api")
 @GetMapping(value="/profile", produces = "application/json")
-@Operation(summary = "Profile");
+@Operation(summary = "Profile")
 @ApiResponse(responseCode = "200", description = "Profile")
 @ApiResponse(responseCode = "401", description = "Token missing")
 @ApiResponse(responseCode = "403", description = "Token Error")
