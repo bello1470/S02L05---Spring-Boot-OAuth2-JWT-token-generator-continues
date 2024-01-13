@@ -17,7 +17,7 @@ import lombok.ToString;
 public class AlbumDTO {
 
     
-    @Schema(description = "Album name", example = "Travel", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "Album ", example = "Travel", requiredMode = RequiredMode.REQUIRED)
     private String name;
 
 
