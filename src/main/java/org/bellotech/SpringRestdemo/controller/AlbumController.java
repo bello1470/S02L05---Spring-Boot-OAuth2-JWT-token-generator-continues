@@ -291,7 +291,7 @@ public ResponseEntity<List<HashMap<String, List<String>>>> photos(@RequestPart(r
             photos.add(new PhotoDTO(photo.getId(), photo.getName(), photo.getDescription(), photo.getFileName(), link));
         }
 
-        AlbumViewDTO albumViewDTO = newAlbumViewDTO(album.getId(), album.getName(), album.getDescription(), photos);
+        AlbumViewDTO albumViewDTO = new AlbumViewDTO(album.getId(), album.getName(), album.getDescription(), photos);
 
         return ResponseEntity.ok(albumViewDTO);
     }
