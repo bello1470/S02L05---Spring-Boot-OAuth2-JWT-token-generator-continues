@@ -21,7 +21,7 @@ public class Photo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private long id
 
     
 
