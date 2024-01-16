@@ -27,7 +27,7 @@ public class Photo {
 
     
 
-    private String name;m
+    private String name;
 
     private String description;
 
